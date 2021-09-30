@@ -24,7 +24,7 @@ import sys
 import time
 import argparse
 import numpy as np
-
+import bts
 # Computer Vision
 import cv2
 from scipy import ndimage
@@ -104,7 +104,7 @@ R = np.identity(3, dtype=np.float)
 map1, map2 = cv2.initUndistortRectifyMap(camera_matrix, dist_coeffs, R, new_camera_matrix, (640, 480), cv2.CV_32FC1)
 
 def load_model():
-    params = bts_parameters(
+    params = bts.bts_parameters(
         encoder=args.encoder,
         height=args.input_height,
         width=args.input_width,
@@ -116,7 +116,7 @@ def load_model():
         num_epochs=None,
     )
     
-    model = BtsModel(params, 'test', image, None, focal=focals, bn_training=False)
+    model = bts.BtsModel(params, 'test', image, None, focal=focals, bn_training=False)
     
     # INIT
     sess.run(tf.global_variables_initializer())

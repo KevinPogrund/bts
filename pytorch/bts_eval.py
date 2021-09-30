@@ -22,7 +22,7 @@ import time
 import numpy as np
 import cv2
 import sys
-
+import bts
 import torch
 import torch.nn as nn
 import torch.nn.utils as utils
@@ -152,7 +152,7 @@ def test(params):
     args.mode = 'test'
     dataloader = BtsDataLoader(args, 'eval')
     
-    model = BtsModel(params=params)
+    model = bts.BtsModel(params=params)
     model = torch.nn.DataParallel(model)
     
     cudnn.benchmark = True

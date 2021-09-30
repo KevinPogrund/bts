@@ -24,7 +24,7 @@ import sys
 import time
 import argparse
 import numpy as np
-
+import bts
 # Computer Vision
 import cv2
 from scipy import ndimage
@@ -95,7 +95,7 @@ map1, map2 = cv2.initUndistortRectifyMap(camera_matrix, dist_coeffs, R, new_came
 
 def load_model():
     args.mode = 'test'
-    model = BtsModel(params=args)
+    model = bts.BtsModel(params=args)
     model = torch.nn.DataParallel(model)
 
     checkpoint = torch.load(args.checkpoint_path)

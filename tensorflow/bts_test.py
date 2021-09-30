@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 import cv2
 import sys
 import tqdm
-
+import bts
 from bts_dataloader import *
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
@@ -85,7 +85,7 @@ def test(params):
     iter_init_op = dataloader_iter.initializer
     image, focal = dataloader_iter.get_next()
 
-    model = BtsModel(params, 'test', image, None, focal=focal, bn_training=False)
+    model = bts.BtsModel(params, 'test', image, None, focal=focal, bn_training=False)
 
     # SESSION
     config = tf.ConfigProto(allow_soft_placement=True)
@@ -209,7 +209,7 @@ def test(params):
 
 def main(_):
     
-    params = bts_parameters(
+    params = bts.bts_parameters(
         encoder=args.encoder,
         height=args.input_height,
         width=args.input_width,

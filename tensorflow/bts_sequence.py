@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 import sys
 import tensorflow as tf
 import tqdm
-
+import bts
 from bts_dataloader import *
 
 parser = argparse.ArgumentParser(description='BTS TensorFlow implementation.')
@@ -80,7 +80,7 @@ def test_sequence(params):
     image = tf.placeholder(tf.float32, [1, args.input_height, args.input_width, 3])
     focals = tf.constant([focal])
 
-    model = BtsModel(params, 'test', image, None, focal=focals, bn_training=False)
+    model = bts.BtsModel(params, 'test', image, None, focal=focals, bn_training=False)
 
     # SESSION
     config = tf.ConfigProto(allow_soft_placement=True)
@@ -172,7 +172,7 @@ def test_sequence(params):
 
 def main(_):
     
-    params = bts_parameters(
+    params = bts.bts_parameters(
         encoder=args.encoder,
         height=args.input_height,
         width=args.input_width,

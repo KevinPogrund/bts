@@ -22,7 +22,7 @@ import time
 import numpy as np
 import cv2
 import sys
-
+import bts
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
@@ -86,7 +86,7 @@ def test(params):
     args.mode = 'test'
     dataloader = BtsDataLoader(args, 'test')
     
-    model = BtsModel(params=args)
+    model = bts.BtsModel(params=args)
     model = torch.nn.DataParallel(model)
     
     checkpoint = torch.load(args.checkpoint_path)
