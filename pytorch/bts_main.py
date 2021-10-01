@@ -55,7 +55,7 @@ parser.add_argument('--encoder',                   type=str,   help='type of enc
                                                                     'resnet101_bts, resnet50_bts, resnext50_bts or resnext101_bts',
                                                                default='densenet161_bts')
 # Dataset
-parser.add_argument('--dataset',                   type=str,   help='dataset to train on, kitti or nyu', default='nyu')
+parser.add_argument('--dataset',                   type=str,   help='dataset to train on, kitti or nyu', default='kitti')
 parser.add_argument('--data_path',                 type=str,   help='path to the data', required=True)
 parser.add_argument('--gt_path',                   type=str,   help='path to the groundtruth data', required=True)
 parser.add_argument('--filenames_file',            type=str,   help='path to the filenames text file', required=True)
