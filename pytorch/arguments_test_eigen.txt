@@ -1,7 +1,7 @@
 --encoder densenet161_bts
 --data_path ../pytorch/
 --dataset kitti
---filenames_file ./pic.txt
+--filenames_file ../../pic.txt
 --model_name bts_eigen_v2_pytorch_densenet161
 --checkpoint_path ./models/bts_eigen_v2_pytorch_densenet161/model
 --input_height 352
