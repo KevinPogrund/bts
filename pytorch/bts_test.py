@@ -125,7 +125,7 @@ def test(params):
             pred_1x1s.append(reduc1x1[0].cpu().numpy().squeeze())
 
     elapsed_time = time.time() - start_time
-    print('Elapesed time: %s' % str(elapsed_time))
+    print('Elapsed time: %s' % str(elapsed_time))
     print('Done.')
     
     save_name = 'result_' + args.model_name
@@ -188,31 +188,31 @@ def test(params):
         if args.save_lpg:
             cv2.imwrite(filename_image_png, image[10:-1 - 9, 10:-1 - 9, :])
             if args.dataset == 'nyu':
-                plt.imsave(filename_gt_png, np.log10(gt[10:-1 - 9, 10:-1 - 9]), cmap='Greys')
+                plt.imsave(filename_gt_png, np.log10(gt[10:-1 - 9, 10:-1 - 9]), cmap='hot')
                 pred_depth_cropped = pred_depth[10:-1 - 9, 10:-1 - 9]
-                plt.imsave(filename_cmap_png, np.log10(pred_depth_cropped), cmap='Greys')
+                plt.imsave(filename_cmap_png, np.log10(pred_depth_cropped), cmap='hot')
                 pred_8x8_cropped = pred_8x8[10:-1 - 9, 10:-1 - 9]
                 filename_lpg_cmap_png = filename_cmap_png.replace('.png', '_8x8.png')
-                plt.imsave(filename_lpg_cmap_png, np.log10(pred_8x8_cropped), cmap='Greys')
+                plt.imsave(filename_lpg_cmap_png, np.log10(pred_8x8_cropped), cmap='hot')
                 pred_4x4_cropped = pred_4x4[10:-1 - 9, 10:-1 - 9]
                 filename_lpg_cmap_png = filename_cmap_png.replace('.png', '_4x4.png')
-                plt.imsave(filename_lpg_cmap_png, np.log10(pred_4x4_cropped), cmap='Greys')
+                plt.imsave(filename_lpg_cmap_png, np.log10(pred_4x4_cropped), cmap='hot')
                 pred_2x2_cropped = pred_2x2[10:-1 - 9, 10:-1 - 9]
                 filename_lpg_cmap_png = filename_cmap_png.replace('.png', '_2x2.png')
-                plt.imsave(filename_lpg_cmap_png, np.log10(pred_2x2_cropped), cmap='Greys')
+                plt.imsave(filename_lpg_cmap_png, np.log10(pred_2x2_cropped), cmap='hot')
                 pred_1x1_cropped = pred_1x1[10:-1 - 9, 10:-1 - 9]
                 filename_lpg_cmap_png = filename_cmap_png.replace('.png', '_1x1.png')
-                plt.imsave(filename_lpg_cmap_png, np.log10(pred_1x1_cropped), cmap='Greys')
+                plt.imsave(filename_lpg_cmap_png, np.log10(pred_1x1_cropped), cmap='hot')
             else:
-                plt.imsave(filename_cmap_png, np.log10(pred_depth), cmap='Greys')
+                plt.imsave(filename_cmap_png, np.log10(pred_depth), cmap='hot')
                 filename_lpg_cmap_png = filename_cmap_png.replace('.png', '_8x8.png')
-                plt.imsave(filename_lpg_cmap_png, np.log10(pred_8x8), cmap='Greys')
+                plt.imsave(filename_lpg_cmap_png, np.log10(pred_8x8), cmap='hot')
                 filename_lpg_cmap_png = filename_cmap_png.replace('.png', '_4x4.png')
-                plt.imsave(filename_lpg_cmap_png, np.log10(pred_4x4), cmap='Greys')
+                plt.imsave(filename_lpg_cmap_png, np.log10(pred_4x4), cmap='hot')
                 filename_lpg_cmap_png = filename_cmap_png.replace('.png', '_2x2.png')
-                plt.imsave(filename_lpg_cmap_png, np.log10(pred_2x2), cmap='Greys')
+                plt.imsave(filename_lpg_cmap_png, np.log10(pred_2x2), cmap='hot')
                 filename_lpg_cmap_png = filename_cmap_png.replace('.png', '_1x1.png')
-                plt.imsave(filename_lpg_cmap_png, np.log10(pred_1x1), cmap='Greys')
+                plt.imsave(filename_lpg_cmap_png, np.log10(pred_1x1), cmap='hot')
     
     return
 
