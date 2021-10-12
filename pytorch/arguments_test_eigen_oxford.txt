@@ -1,0 +1,10 @@
+--encoder densenet161_bts
+--data_path ../../oxford
+--dataset kitti
+--filenames_file ../oxford_eigen.txt
+--model_name bts_eigen_v2_pytorch_densenet161
+--checkpoint_path ./models/bts_eigen_v2_pytorch_densenet161/model
+--input_height 960
+--input_width 1280
+--max_depth 80
+--do_kb_crop

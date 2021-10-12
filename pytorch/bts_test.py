@@ -56,7 +56,7 @@ parser.add_argument('--input_width', type=int, help='input width', default=640)
 parser.add_argument('--max_depth', type=float, help='maximum depth in estimation', default=80)
 parser.add_argument('--checkpoint_path', type=str, help='path to a specific checkpoint to load', default='')
 parser.add_argument('--dataset', type=str, help='dataset to train on, make3d or nyudepthv2', default='nyu')
-parser.add_argument('--do_kb_crop', help='if set, crop input images as kitti benchmark images', action='store_true')
+parser.add_argument('--do_kb_crop', help='if set, crop input images as kitti benchmark images', action='store_false')#qwerty
 parser.add_argument('--save_lpg', help='if set, save outputs from lpg layers', action='store_true')
 parser.add_argument('--bts_size', type=int,   help='initial num_filters in bts', default=512)
 
