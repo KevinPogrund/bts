@@ -136,6 +136,21 @@ def test():
             depth = depth.astype(np.float32) / 1000.0
             gt_depths.append(depth)
 
+    elif args.dataset == 'test':
+        for t_id in range(num_test_samples):
+            file_dir = pred_filenames[t_id].split('.')[0]
+            filename = file_dir.split('_')[-1]
+            directory = file_dir.replace('_' + filename, '')
+            gt_depth_path = os.path.join(args.gt_path, '0000000015' + '.png')
+            depth = cv2.imread(gt_depth_path, -1)
+            if depth is None:
+                print('Missing: %s ' % gt_depth_path)
+                missing_ids.add(t_id)
+                continue
+
+            depth = depth.astype(np.float32) / 256.0
+            gt_depths.append(depth)
+
     print('GT files reading done')
     print('{} GT files missing'.format(len(missing_ids)))
 
