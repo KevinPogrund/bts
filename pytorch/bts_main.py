@@ -61,7 +61,7 @@ parser.add_argument('--gt_path',                   type=str,   help='path to the
 parser.add_argument('--filenames_file',            type=str,   help='path to the filenames text file', required=True)
 parser.add_argument('--input_height',              type=int,   help='input height', default=480)
 parser.add_argument('--input_width',               type=int,   help='input width',  default=640)
-parser.add_argument('--max_depth',                 type=float, help='maximum depth in estimation', default=10)
+parser.add_argument('--max_depth',                 type=float, help='maximum depth in estimation', default=0)
 
 # Log and save
 parser.add_argument('--log_directory',             type=str,   help='directory to save checkpoints and summaries', default='')
@@ -84,9 +84,9 @@ parser.add_argument('--end_learning_rate',         type=float, help='end learnin
 parser.add_argument('--variance_focus',            type=float, help='lambda in paper: [0, 1], higher value more focus on minimizing variance of error', default=0.85)
 
 # Preprocessing
-parser.add_argument('--do_random_rotate',                      help='if set, will perform random rotation for augmentation', action='store_true')
+parser.add_argument('--do_random_rotate',                      help='if set, will perform random rotation for augmentation', action='store_false')
 parser.add_argument('--degree',                    type=float, help='random rotation maximum degree', default=2.5)
-parser.add_argument('--do_kb_crop',                            help='if set, crop input images as kitti benchmark images', action='store_true')
+parser.add_argument('--do_kb_crop',                            help='if set, crop input images as kitti benchmark images', action='store_false')
 parser.add_argument('--use_right',                             help='if set, will randomly use right images when train on KITTI', action='store_true')
 
 # Multi-gpu training
@@ -108,7 +108,7 @@ parser.add_argument('--filenames_file_eval',       type=str,   help='path to the
 parser.add_argument('--min_depth_eval',            type=float, help='minimum depth for evaluation', default=1e-3)
 parser.add_argument('--max_depth_eval',            type=float, help='maximum depth for evaluation', default=80)
 parser.add_argument('--eigen_crop',                            help='if set, crops according to Eigen NIPS14', action='store_true')
-parser.add_argument('--garg_crop',                             help='if set, crops according to Garg  ECCV16', action='store_true')
+parser.add_argument('--garg_crop',                             help='if set, crops according to Garg  ECCV16', action='store_false')
 parser.add_argument('--eval_freq',                 type=int,   help='Online evaluation frequency in global steps', default=500)
 parser.add_argument('--eval_summary_directory',    type=str,   help='output directory for eval summary,'
                                                                     'if empty outputs to checkpoint folder', default='')
@@ -238,6 +238,8 @@ def set_misc(model):
             fixing_layers = ['conv0', 'norm']
         print("Fixing first conv layer")
 
+
+
     for name, child in model.named_children():
         if not 'encoder' in name:
             continue
@@ -334,9 +336,29 @@ def main_worker(gpu, ngpus_per_node, args):
 
     # Create model
     model = BtsModel(args)
+
     model.train()
     model.decoder.apply(weights_init_xavier)
     set_misc(model)
+
+    # freeze layers
+    unfreeze_layers = ['denseblock4.denselayer24']
+
+    for param in model.parameters():
+        param.requires_grad = False  # freeze everything
+
+    for name, child in model.named_children():
+        if 'encoder' not in name:
+            continue
+        for name2, parameters in child.named_parameters():
+            # print(name, name2)
+            if any(x in name2 for x in unfreeze_layers):
+                parameters.requires_grad = True
+
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            print(name)  # print the layers which have been unfrozen (for checking)
+
 
     num_params = sum([np.prod(p.size()) for p in model.parameters()])
     print("Total number of parameters: {}".format(num_params))
@@ -381,10 +403,12 @@ def main_worker(gpu, ngpus_per_node, args):
             else:
                 loc = 'cuda:{}'.format(args.gpu)
                 checkpoint = torch.load(args.checkpoint_path, map_location=loc)
+
             global_step = checkpoint['global_step']
             model.load_state_dict(checkpoint['model'])
             optimizer.load_state_dict(checkpoint['optimizer'])
             try:
+                s = ''
                 best_eval_measures_higher_better = checkpoint['best_eval_measures_higher_better'].cpu()
                 best_eval_measures_lower_better = checkpoint['best_eval_measures_lower_better'].cpu()
                 best_eval_steps = checkpoint['best_eval_steps']
