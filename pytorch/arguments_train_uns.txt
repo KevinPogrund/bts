@@ -1,5 +1,5 @@
 --mode train
---model_name bts_eigen_v2_pytorch_test0
+--model_name bts_eigen_v2_pytorch_1_layer_scaled
 --encoder densenet161_bts
 --dataset kitti
 --data_path ../../Unstructured/train/rgb
@@ -28,7 +28,7 @@
 --eval_freq 10
 --data_path_eval ../../Unstructured/eval/rgb
 --gt_path_eval ../../Unstructured/eval/gt
---filenames_file_eval ../eval_unstructured.txt
+--filenames_file_eval ../test_uns.txt
 --min_depth_eval 1e-3
 --max_depth_eval 80
 --eval_summary_directory ./models/eval/

@@ -190,7 +190,7 @@ def get_num_lines(file_path):
     return len(lines)
 
 
-def colorize(value, vmin=None, vmax=None, cmap='Greys'):
+def colorize(value, vmin=None, vmax=None, cmap='jet'):
     value = value.cpu().numpy()[:, :, :]
     value = np.log10(value)
 
@@ -263,7 +263,7 @@ def online_eval(model, dataloader_eval, gpu, ngpus):
         with torch.no_grad():
             image = torch.autograd.Variable(eval_sample_batched['image'].cuda(gpu, non_blocking=True))
             focal = torch.autograd.Variable(eval_sample_batched['focal'].cuda(gpu, non_blocking=True))
-            gt_depth = eval_sample_batched['depth']
+            gt_depth = eval_sample_batched['depth'] * 256.0
             has_valid_depth = eval_sample_batched['has_valid_depth']
             if not has_valid_depth:
                 # print('Invalid depth. continue.')
@@ -276,10 +276,13 @@ def online_eval(model, dataloader_eval, gpu, ngpus):
 
         if args.do_kb_crop:
             height, width = gt_depth.shape
-            top_margin = int(height - 352)
-            left_margin = int((width - 1216) / 2)
+            # top_margin = int(height - 352)
+            # left_margin = int((width - 1216) / 2)
+            top_margin = 0
+            left_margin = 0
             pred_depth_uncropped = np.zeros((height, width), dtype=np.float32)
-            pred_depth_uncropped[top_margin:top_margin + 352, left_margin:left_margin + 1216] = pred_depth
+            # pred_depth_uncropped[top_margin:top_margin + 352, left_margin:left_margin + 1216] = pred_depth
+            pred_depth_uncropped[top_margin:top_margin + height, left_margin:left_margin + width] = pred_depth
             pred_depth = pred_depth_uncropped
 
         pred_depth[pred_depth < args.min_depth_eval] = args.min_depth_eval
@@ -481,13 +484,13 @@ def main_worker(gpu, ngpus_per_node, args):
             if args.dataset == 'nyu':
                 mask = depth_gt > 0.1
             elif args.dataset == 'kitti':
-                mask = depth_gt > 1.0
+                mask = depth_gt > 0.001
 
             loss = silog_criterion.forward(depth_est, depth_gt, mask.to(torch.bool))
             loss.backward()
             for param_group in optimizer.param_groups:
                 current_lr = (args.learning_rate - end_learning_rate) * (
-                            1 - global_step / num_total_steps) ** 0.9 + end_learning_rate
+                        1 - global_step / num_total_steps) ** 0.9 + end_learning_rate
                 param_group['lr'] = current_lr
 
             optimizer.step()
@@ -598,6 +601,7 @@ def main_worker(gpu, ngpus_per_node, args):
         writer.close()
         if args.do_online_eval:
             eval_summary_writer.close()
+
 
 def main():
     if args.mode != 'train':

@@ -147,22 +147,22 @@ def test_sequence(params):
             pred_1x1 = pred_1x1.squeeze()
 
             save_path = os.path.join(args.out_path, 'depth', image_files[s].split('/')[-1])
-            plt.imsave(save_path, np.log10(pred_depth), cmap='Greys')
+            plt.imsave(save_path, np.log10(pred_depth), cmap='jet')
 
             save_path = os.path.join(args.out_path, 'rgb', image_files[s].split('/')[-1])
             cv2.imwrite(save_path, input_image_original)
 
             save_path = os.path.join(args.out_path, 'reduc1x1', image_files[s].split('/')[-1])
-            plt.imsave(save_path, np.log10(pred_1x1), cmap='Greys')
+            plt.imsave(save_path, np.log10(pred_1x1), cmap='jet')
             
             save_path = os.path.join(args.out_path, 'lpg2x2', image_files[s].split('/')[-1])
-            plt.imsave(save_path, np.log10(pred_2x2), cmap='Greys')
+            plt.imsave(save_path, np.log10(pred_2x2), cmap='jet')
 
             save_path = os.path.join(args.out_path, 'lpg4x4', image_files[s].split('/')[-1])
-            plt.imsave(save_path, np.log10(pred_4x4), cmap='Greys')
+            plt.imsave(save_path, np.log10(pred_4x4), cmap='jet')
 
             save_path = os.path.join(args.out_path, 'lpg8x8', image_files[s].split('/')[-1])
-            plt.imsave(save_path, np.log10(pred_8x8), cmap='Greys')
+            plt.imsave(save_path, np.log10(pred_8x8), cmap='jet')
 
             print('{}/{}'.format(s, num_test_samples))
 

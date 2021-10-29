@@ -56,9 +56,9 @@ parser.add_argument('--input_width', type=int, help='input width', default=640)
 parser.add_argument('--max_depth', type=float, help='maximum depth in estimation', default=80)
 parser.add_argument('--checkpoint_path', type=str, help='path to a specific checkpoint to load', default='')
 parser.add_argument('--dataset', type=str, help='dataset to train on, make3d or nyudepthv2', default='nyu')
-parser.add_argument('--do_kb_crop', help='if set, crop input images as kitti benchmark images', action='store_true')
+parser.add_argument('--do_kb_crop', help='if set, crop input images as kitti benchmark images', action='store_false')
 parser.add_argument('--save_lpg', help='if set, save outputs from lpg layers', action='store_true')
-parser.add_argument('--bts_size', type=int,   help='initial num_filters in bts', default=512)
+parser.add_argument('--bts_size', type=int, help='initial num_filters in bts', default=512)
 
 if sys.argv.__len__() == 2:
     arg_filename_with_prefix = '@' + sys.argv[1]
@@ -86,10 +86,10 @@ def test(params):
     """Test function."""
     args.mode = 'test'
     dataloader = BtsDataLoader(args, 'test')
-    
+
     model = BtsModel(params=args)
     model = torch.nn.DataParallel(model)
-    
+
     checkpoint = torch.load(args.checkpoint_path)
     model.load_state_dict(checkpoint['model'])
     model.eval()
@@ -127,9 +127,9 @@ def test(params):
     elapsed_time = time.time() - start_time
     print('Elapsed time: %s' % str(elapsed_time))
     print('Done.')
-    
+
     save_name = 'result_' + args.model_name
-    
+
     print('Saving result pngs..')
     if not os.path.exists(os.path.dirname(save_name)):
         try:
@@ -141,19 +141,20 @@ def test(params):
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-    
+
     for s in tqdm(range(num_test_samples)):
         if args.dataset == 'kitti':
             date_drive = lines[s].split('/')[1]
-            filename_pred_png = save_name + '/raw/' + date_drive + '_' + lines[s].split()[0].split('/')[-1].replace(
-                '.jpg', '.png')
-            filename_cmap_png = save_name + '/cmap/' + date_drive + '_' + lines[s].split()[0].split('/')[
-                -1].replace('.jpg', '.png')
-            filename_image_png = save_name + '/rgb/' + date_drive + '_' + lines[s].split()[0].split('/')[-1]
-        elif args.dataset == 'kitti_benchmark':
+            # filename_pred_png = save_name + '/raw/' + date_drive + '_1' + lines[s].split()[0].split('/')[-1].replace(
+            #     '.jpg', '.png')
             filename_pred_png = save_name + '/raw/' + lines[s].split()[0].split('/')[-1].replace('.jpg', '.png')
-            filename_cmap_png = save_name + '/cmap/' + lines[s].split()[0].split('/')[-1].replace('.jpg', '.png')
-            filename_image_png = save_name + '/rgb/' + lines[s].split()[0].split('/')[-1]
+            filename_cmap_png = save_name + '/cmap/' + date_drive + '_2' + lines[s].split()[0].split('/')[
+                -1].replace('.jpg', '.png')
+            filename_image_png = save_name + '/rgb/' + date_drive + '_3' + lines[s].split()[0].split('/')[-1]
+        elif args.dataset == 'kitti_benchmark':
+            filename_pred_png = save_name + '/raw3/' + lines[s].split()[0].split('/')[-1].replace('.jpg', '.png')
+            filename_cmap_png = save_name + '/cmap4/' + lines[s].split()[0].split('/')[-1].replace('.jpg', '.png')
+            filename_image_png = save_name + '/rgb5/' + lines[s].split()[0].split('/')[-1]
         else:
             scene_name = lines[s].split()[0].split('/')[0]
             filename_pred_png = save_name + '/raw/' + scene_name + '_' + lines[s].split()[0].split('/')[1].replace(
@@ -163,28 +164,28 @@ def test(params):
             filename_gt_png = save_name + '/gt/' + scene_name + '_' + lines[s].split()[0].split('/')[1].replace(
                 '.jpg', '.png')
             filename_image_png = save_name + '/rgb/' + scene_name + '_' + lines[s].split()[0].split('/')[1]
-        
+
         rgb_path = os.path.join(args.data_path, './' + lines[s].split()[0])
         image = cv2.imread(rgb_path)
         if args.dataset == 'nyu':
             gt_path = os.path.join(args.data_path, './' + lines[s].split()[1])
             gt = cv2.imread(gt_path, -1).astype(np.float32) / 1000.0  # Visualization purpose only
             gt[gt == 0] = np.amax(gt)
-        
+
         pred_depth = pred_depths[s]
         pred_8x8 = pred_8x8s[s]
         pred_4x4 = pred_4x4s[s]
         pred_2x2 = pred_2x2s[s]
         pred_1x1 = pred_1x1s[s]
-        
+
         if args.dataset == 'kitti' or args.dataset == 'kitti_benchmark':
             pred_depth_scaled = pred_depth * 256.0
         else:
             pred_depth_scaled = pred_depth * 1000.0
-        
+
         pred_depth_scaled = pred_depth_scaled.astype(np.uint16)
         cv2.imwrite(filename_pred_png, pred_depth_scaled, [cv2.IMWRITE_PNG_COMPRESSION, 0])
-        
+
         if args.save_lpg:
             cv2.imwrite(filename_image_png, image[10:-1 - 9, 10:-1 - 9, :])
             if args.dataset == 'nyu':
@@ -213,7 +214,7 @@ def test(params):
                 plt.imsave(filename_lpg_cmap_png, np.log10(pred_2x2), cmap='hot')
                 filename_lpg_cmap_png = filename_cmap_png.replace('.png', '_1x1.png')
                 plt.imsave(filename_lpg_cmap_png, np.log10(pred_1x1), cmap='hot')
-    
+
     return
 
 
