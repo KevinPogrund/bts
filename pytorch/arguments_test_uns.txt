@@ -1,0 +1,10 @@
+--encoder densenet161_bts
+--dataset kitti
+--data_path ../../Unstructured/eval/rgb
+--filenames_file ../test_unstructured.txt
+--model_name bts_eigen_v2_pytorch_1_layer
+--checkpoint_path ./models/bts_eigen_v2_pytorch_1_layer/model
+--input_height 480
+--input_width 640
+--max_depth 80
+--do_kb_crop

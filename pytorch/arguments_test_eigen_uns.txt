@@ -1,9 +1,9 @@
 --encoder densenet161_bts
---data_path ../../Unstructured/eval/rgb
+--data_path ../../kitti
 --dataset kitti
---filenames_file ../test_uns.txt
---model_name bts_eigen_v2_pytorch_1_layer
---checkpoint_path ./models/bts_eigen_v2_pytorch_1_layer/model-3210-best_rms_10.80456
---input_height 480
---input_width 640
+--filenames_file ../kitti.txt
+--model_name full_layer
+--checkpoint_path ./models/bts_eigen_v2_pytorch_full_layer/model
+--input_height 352
+--input_width 1216
 --max_depth 80

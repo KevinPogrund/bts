@@ -350,14 +350,20 @@ def main_worker(gpu, ngpus_per_node, args):
 
     # Create model
     model = BtsModel(args)
-
     model.train()
     model.decoder.apply(weights_init_xavier)
     set_misc(model)
 
     # freeze layers
-    unfreeze_layers = ['denseblock4.denselayer24']
-
+    unfreeze_layers = ['denseblock4.denselayer24', 'denseblock4.denselayer23', 'denseblock4.denselayer22',
+                       'denseblock4.denselayer21', 'denseblock4.denselayer20',
+                       'denseblock4.denselayer19', 'denseblock4.denselayer18', 'denseblock4.denselayer17',
+                       'denseblock4.denselayer16', 'denseblock4.denselayer15',
+                       # 'denseblock4.denselayer14', 'denseblock4.denselayer13', 'denseblock4.denselayer12',
+                       # 'denseblock4.denselayer11', 'denseblock4.denselayer10',
+                       # 'denseblock4.denselayer9', 'denseblock4.denselayer8', 'denseblock4.denselayer7',
+                       # 'denseblock4.denselayer6', 'denseblock4.denselayer5',
+                       ]
     for param in model.parameters():
         param.requires_grad = False  # freeze everything
 
@@ -595,8 +601,15 @@ def main_worker(gpu, ngpus_per_node, args):
             model_just_loaded = False
             global_step += 1
 
+        if epoch + 1 == args.num_epochs:
+            time.sleep(0.1)
+            model.eval()
+            online_eval(model, dataloader_eval, gpu, ngpus_per_node)
+            checkpoint = {'global_step': global_step,
+                          'model': model.state_dict(),
+                          'optimizer': optimizer.state_dict()}
+            torch.save(checkpoint, args.log_directory + '/' + args.model_name + '/final_model-{}'.format(global_step))
         epoch += 1
-
     if not args.multiprocessing_distributed or (args.multiprocessing_distributed and args.rank % ngpus_per_node == 0):
         writer.close()
         if args.do_online_eval:

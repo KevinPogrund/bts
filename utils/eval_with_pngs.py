@@ -110,8 +110,10 @@ def test():
         for t_id in range(num_test_samples):
             file_dir = pred_filenames[t_id].split('.')[0]
             filename = file_dir.split('_')[-1]
-            directory = file_dir.replace('_' + filename, '')
-            gt_depth_path = os.path.join(args.gt_path, directory, 'proj_depth/groundtruth/image_02', filename + '.png')
+
+            directory = file_dir.replace('sync_image', 'sync_groundtruth_depth')
+            # directory = "depth"  # for depth evaluation
+            gt_depth_path = os.path.join(args.gt_path, directory.replace("sync_image", "sync_groundtruth_depth")+'.png')
             depth = cv2.imread(gt_depth_path, -1)
             if depth is None:
                 print('Missing: %s ' % gt_depth_path)
@@ -119,7 +121,7 @@ def test():
                 continue
 
             depth = depth.astype(np.float32) / 256.0
-            gt_depths.append(depth)
+            gt_depths.append(depth)  # added 256 for unstructured
 
     elif args.dataset == 'nyu':
         for t_id in range(num_test_samples):
@@ -200,10 +202,12 @@ def eval(pred_depths):
 
         if args.do_kb_crop:
             height, width = gt_depth.shape
-            top_margin = int(height - 352)
-            left_margin = int((width - 1216) / 2)
+            # top_margin = int(height - 352)
+            # left_margin = int((width - 1216) / 2)
+            # pred_depth_uncropped = np.zeros((height, width), dtype=np.float32)
+            # pred_depth_uncropped[top_margin:top_margin + 352, left_margin:left_margin + 1216] = pred_depth
             pred_depth_uncropped = np.zeros((height, width), dtype=np.float32)
-            pred_depth_uncropped[top_margin:top_margin + 352, left_margin:left_margin + 1216] = pred_depth
+            pred_depth_uncropped[0:height, 0:width] = pred_depth
             pred_depth = pred_depth_uncropped
 
         if args.garg_crop or args.eigen_crop:
